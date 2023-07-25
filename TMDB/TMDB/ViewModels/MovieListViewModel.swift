@@ -19,6 +19,10 @@ class MovieListViewModel {
     }
     
     // MARK: Routing
-    // Incoming
+    
+    func handleMovieTappedFor(_ movie: Movie) {
+        // TODO: Navigate to the details page
+        // no-op
+    }
     
 }
