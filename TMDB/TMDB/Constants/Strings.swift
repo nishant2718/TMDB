@@ -8,7 +8,7 @@
 /// The format of this file is as follows:
 /// - Each screen or view will have its own string extension
 /// - Each extension will contain just the strings related to one screen or view
-/// - Each struct will contain strings grouped for a screen or view. This grouping is left to the developer to do it they find reasonable.
+/// - Each struct will contain strings grouped for a screen or view. This grouping is left to the developer to do as they find reasonable.
 ///
 /// Having it structured this way conveys the context strings are used in.
 ///

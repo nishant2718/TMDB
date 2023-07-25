@@ -8,10 +8,24 @@
 import Foundation
 
 class MovieListViewModel {
+    typealias Dependencies = MoviesProviderService
+
+    private let moviesProvider: MoviesProvider
+    
     var coordinator: MovieListCoordinator?
+    var movies: [Movie] = []
+    var page: Int = 1
+    
+    init(with dependencies: Dependencies) {
+        self.moviesProvider = dependencies.moviesProviderService
+    }
     
     func viewDidLoad() {
-        // no-op
+        // TODO: This is temporary. When you finish using this data to make your UI, then load movies properly.
+        Task {
+            movies = try await moviesProvider.getMoviesFor("hitman", and: page, using: .shared)
+            print(movies)
+        }
     }
     
     func viewDidDisappear() {

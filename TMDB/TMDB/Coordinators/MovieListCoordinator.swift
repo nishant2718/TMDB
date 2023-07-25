@@ -13,6 +13,7 @@ class MovieListCoordinator: Coordinator {
     
     var parentCoordinator: Coordinator?
     private(set) var childCoordinators: [Coordinator] = []
+    let container = TMDBDependencyContainer()
     
     private let window: UIWindow
     let navigationController = UINavigationController()
@@ -26,7 +27,7 @@ class MovieListCoordinator: Coordinator {
     }
     
     func start() {
-        let movieListViewModel = MovieListViewModel()
+        let movieListViewModel = MovieListViewModel(with: container)
         movieListViewModel.coordinator = self
         
         let movieListViewController = MovieListViewController()
