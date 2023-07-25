@@ -8,21 +8,19 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
-    var window: UIWindow?
+    var movieListCoordinator: MovieListCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window.windowScene = windowScene
-        window.rootViewController = ViewController()
-        window.makeKeyAndVisible()
         
-        self.window = window
+        movieListCoordinator = MovieListCoordinator(with: window)
+        movieListCoordinator?.start()
     }
 
-    // NOTE: The below are important methods, but not for this kind of small app.
+    // NOTE: The below are important methods, but not for this small app.
     
     func sceneDidDisconnect(_ scene: UIScene) {
         // no-op
