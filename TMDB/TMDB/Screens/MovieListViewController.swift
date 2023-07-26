@@ -35,33 +35,18 @@ class MovieListViewController: UIViewController {
         viewModel?.viewDidLoad()
         setupLayout()
         configureDataSource()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         applyInitialSnapshot()
     }
     
     private func createSectionLayout() -> UICollectionViewLayout {
-        let sectionProvider = { (sectionClassifier: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
-            guard let sectionNumber = Section(rawValue: sectionClassifier) else { return nil }
-            let section: NSCollectionLayoutSection
-            
-            switch sectionNumber {
-            case .list:
-                // TODO: When the cell is available to work with, tweak these numbers and padding
-                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.4))
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
-//                group.interItemSpacing = .fixed(UX.interItemSpacing)
-                
-                section = NSCollectionLayoutSection(group: group)
-//                section.interGroupSpacing = UX.interGroupSpacing
-//                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: UX.contentInsets, bottom: 0, trailing: UX.contentInsets)
-            }
-            
-            return section
-        }
+        let listConfig = UICollectionLayoutListConfiguration(appearance: .plain)
         
-        return UICollectionViewCompositionalLayout(sectionProvider: sectionProvider)
+        return UICollectionViewCompositionalLayout.list(using: listConfig)
     }
     
     private func setupLayout() {
@@ -77,13 +62,17 @@ class MovieListViewController: UIViewController {
     
     private func configureDataSource() {
         // Movie cell UI
-        let movieCellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Movie> { (cell, indexPath, movie) in
-            // TODO: Wrap poster image fetching in a task
-            Task { }
+        let movieCellRegistration = UICollectionView.CellRegistration<MovieListCell, Movie> { (cell, indexPath, movie) in
+            cell.movieTitleLabel.text = movie.title
+            cell.movieYearLabel.text = movie.releaseDate // Work with this for now
             
-            // TODO: Configure the rest of the cell UI items
-            // cell.titleLabel.text = movie.originalTitle
-            // cell.yearLabel.text = movie.releaseDate
+            Task {
+                let image = await self.viewModel?.fetchPosterImageFor(movie)
+
+                await MainActor.run(body: {
+                    cell.posterImageView.image = image
+                })
+            }
         }
         
         // dataSource setup
@@ -102,10 +91,19 @@ class MovieListViewController: UIViewController {
         snapshot.appendSections(Section.allCases)
         dataSource.apply(snapshot)
         
-        // TODO: Fill in the movies for the list
-        //  let movies = viewModel.movies
-        //  snapshot.appendItems(movies)
-        //  dataSource.apply(snapshot)
+        snapshot.appendItems(viewModel.movies)
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    private func updateSnapshot() {
+        guard let dataSource, let viewModel else { return }
+        
+        Task {
+            var snapshot = dataSource.snapshot()
+            await viewModel.fetchMovies()
+            snapshot.appendItems(viewModel.movies)
+            await dataSource.apply(snapshot, animatingDifferences: true)
+        }
     }
     
     private func updateSnapshot(with offers: [Movie]) {

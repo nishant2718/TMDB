@@ -5,7 +5,7 @@
 //  Created by Nishant Patel on 7/25/23.
 //
 
-import Foundation
+import UIKit
 
 class MovieListViewModel {
     typealias Dependencies = MoviesProviderService
@@ -21,15 +21,40 @@ class MovieListViewModel {
     }
     
     func viewDidLoad() {
-        // TODO: This is temporary. When you finish using this data to make your UI, then load movies properly.
         Task {
-            movies = try await moviesProvider.getMoviesFor("hitman", and: page, using: .shared)
-            print(movies)
+            await fetchMovies()
         }
     }
     
     func viewDidDisappear() {
         // no-op
+    }
+    
+    func fetchMovies() async {
+        do {
+            let movies = try await moviesProvider.getMoviesFor("hitman",
+                                                               and: page,
+                                                               using: .shared)
+            self.movies += movies
+            page += 1
+        } catch {
+            print(error)
+        }
+    }
+    
+    func fetchPosterImageFor(_ movie: Movie) async -> UIImage? {
+        guard let posterEndpoint = movie.posterPath else {
+            return UIImage(named: DeveloperStrings.placeholderImage.rawValue)!
+        }
+        
+        var image: UIImage?
+        do {
+            image = try await moviesProvider.getPosterImageUsing(posterEndpoint, with: .shared)
+        } catch let error {
+            print(error)
+        }
+        
+        return image
     }
     
     // MARK: Routing
@@ -38,5 +63,4 @@ class MovieListViewModel {
         // TODO: Navigate to the details page
         // no-op
     }
-    
 }
