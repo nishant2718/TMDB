@@ -128,11 +128,28 @@ class MovieListViewController: UIViewController {
             snapshot.appendItems(movies)
             dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
         } else {
-            snapshot.appendItems(movies)
-            dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
+            if snapshot.sectionIdentifiers.count > 0 {
+                snapshot.appendItems(movies)
+                dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
+            } else {
+                var snapshot = dataSource.snapshot()
+                snapshot.appendSections(Section.allCases)
+                dataSource.apply(snapshot)
+                
+                snapshot.appendItems(movies)
+                dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
+            }
         }
         
         emptyLabel.isHidden = true
+    }
+    
+    private func purgeCollectionView() {
+        guard let dataSource else { return }
+
+        var snapshot = dataSource.snapshot()
+        snapshot.deleteAllItems()
+        dataSource.apply(snapshot)
     }
     
     private func configureEmptyStateLabel() {
@@ -164,7 +181,7 @@ extension MovieListViewController: UISearchResultsUpdating {
 
         guard let text = searchController.searchBar.text, !text.isEmpty else {
             emptyLabel.isHidden = false
-            // purgeCollectionView() // TODO: Purge so that items dont display
+            purgeCollectionView()
             return
         }
         Task {
@@ -196,7 +213,7 @@ extension MovieListViewController: UICollectionViewDelegate {
             Task {
                 await viewModel.fetchMovies()
                 
-                if viewModel.shouldUpdate {
+                if viewModel.shouldUpdate, emptyLabel.isHidden {
                     await MainActor.run(body: {
                         updateSnapshot(with: viewModel.movies)
                     })
