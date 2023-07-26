@@ -30,11 +30,15 @@ class MovieListViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
+        navigationItem.hidesSearchBarWhenScrolling = false
         title = .MovieList.Title
-        
+        navigationItem.largeTitleDisplayMode = .always
+
         viewModel?.viewDidLoad()
+        configureSearchBar()
         setupLayout()
         configureDataSource()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -103,6 +107,26 @@ class MovieListViewController: UIViewController {
         snapshot.appendItems(movies)
         dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
     }
+    
+    // MARK: Search related
+    
+    private func configureSearchBar() {
+        let searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search"
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+    }
+}
+
+extension MovieListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        // no-op
+        // TODO: send text to viewModel's fetch movies method
+    }
+    
+    
 }
 
 extension MovieListViewController: UICollectionViewDelegate {
