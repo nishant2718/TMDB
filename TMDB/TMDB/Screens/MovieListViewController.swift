@@ -47,7 +47,6 @@ class MovieListViewController: UIViewController {
         view.backgroundColor = .systemBackground
         navigationItem.hidesSearchBarWhenScrolling = false
         title = .MovieList.Title
-        navigationItem.largeTitleDisplayMode = .always
 
         viewModel?.viewDidLoad()
         configureSearchBar()
@@ -125,8 +124,14 @@ class MovieListViewController: UIViewController {
             snapshot.appendSections(Section.allCases)
             dataSource.apply(snapshot)
             
-            snapshot.appendItems(movies)
-            dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
+            if movies.isEmpty {
+                purgeCollectionView()
+            } else {
+                snapshot.appendItems(movies)
+                dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
+                
+                emptyLabel.isHidden = true
+            }
         } else {
             if snapshot.sectionIdentifiers.count > 0 {
                 snapshot.appendItems(movies)
@@ -138,10 +143,10 @@ class MovieListViewController: UIViewController {
                 
                 snapshot.appendItems(movies)
                 dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
+                
+                emptyLabel.isHidden = true
             }
         }
-        
-        emptyLabel.isHidden = true
     }
     
     private func purgeCollectionView() {
@@ -150,6 +155,8 @@ class MovieListViewController: UIViewController {
         var snapshot = dataSource.snapshot()
         snapshot.deleteAllItems()
         dataSource.apply(snapshot)
+        
+        emptyLabel.isHidden = false
     }
     
     private func configureEmptyStateLabel() {
@@ -162,8 +169,6 @@ class MovieListViewController: UIViewController {
             emptyLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-    
-    // MARK: Search related
     
     private func configureSearchBar() {
         let searchController = UISearchController()

@@ -31,6 +31,7 @@ class NetworkManager: MoviesProvider {
 
     init() {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        cache.countLimit = 60 // NOTE: Done to be responsible with memory, but also balance scroll UX.
     }
 
     func getMoviesFor(_ keyword: String,
