@@ -10,7 +10,7 @@ import UIKit
 protocol MoviesProvider {
     func getMoviesFor(_ keyword: String,
                       and page: Int,
-                      using urlSession: URLSession) async throws -> [Movie]
+                      using urlSession: URLSession) async throws -> ([Movie], Int)
 
     func getPosterImageUsing(_ link: String,
                              with urlSession: URLSession) async throws -> UIImage
@@ -35,7 +35,7 @@ class NetworkManager: MoviesProvider {
 
     func getMoviesFor(_ keyword: String,
                       and page: Int,
-                      using urlSession: URLSession = .shared) async throws -> [Movie] {
+                      using urlSession: URLSession = .shared) async throws -> ([Movie], Int) {
         let endpoint = "\(prefixEndpoint)\(keyword)\(suffixEndpoint)\(page)"
         
         guard let url = URL(string: endpoint) else {
@@ -51,7 +51,7 @@ class NetworkManager: MoviesProvider {
         
         do {
             let movies = try decoder.decode(Movies.self, from: data)
-            return movies.results
+            return (movies.results, movies.totalPages)
         } catch let error {
             print(error)
             throw NetworkingError.badData

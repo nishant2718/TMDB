@@ -64,7 +64,7 @@ class MovieListViewController: UIViewController {
         // Movie cell UI
         let movieCellRegistration = UICollectionView.CellRegistration<MovieListCell, Movie> { (cell, indexPath, movie) in
             cell.movieTitleLabel.text = movie.title
-            cell.movieYearLabel.text = movie.releaseDate // Work with this for now
+            cell.movieYearLabel.text = String(movie.releaseDate.prefix(4))
             
             Task {
                 let image = await self.viewModel?.fetchPosterImageFor(movie)
@@ -84,6 +84,7 @@ class MovieListViewController: UIViewController {
         }
     }
     
+    @MainActor
     private func applyInitialSnapshot() {
         guard let dataSource, let viewModel else { return }
         
@@ -95,23 +96,12 @@ class MovieListViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
-    private func updateSnapshot() {
-        guard let dataSource, let viewModel else { return }
-        
-        Task {
-            var snapshot = dataSource.snapshot()
-            await viewModel.fetchMovies()
-            snapshot.appendItems(viewModel.movies)
-            await dataSource.apply(snapshot, animatingDifferences: true)
-        }
-    }
-    
-    private func updateSnapshot(with offers: [Movie]) {
+    private func updateSnapshot(with movies: [Movie]) {
         guard let dataSource else { return }
 
         var snapshot = dataSource.snapshot()
-        snapshot.appendItems(offers)
-        dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
+        snapshot.appendItems(movies)
+        dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
     }
 }
 
@@ -127,14 +117,22 @@ extension MovieListViewController: UICollectionViewDelegate {
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView,
                                   willDecelerate decelerate: Bool) {
+        guard let viewModel else { return }
+        
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
         
         if offsetY > contentHeight - height {
-            // TODO: Fill in the update snapshot with newly fetched movies
-            // viewModel?.getMovies()
-            // updateSnapshot(with: movies)
+            Task {
+                await viewModel.fetchMovies()
+                
+                if viewModel.shouldUpdate {
+                    await MainActor.run(body: {
+                        updateSnapshot(with: viewModel.movies)
+                    })
+                }
+            }
         }
     }
 }

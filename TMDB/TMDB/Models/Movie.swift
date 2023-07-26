@@ -9,6 +9,7 @@ import Foundation
 
 struct Movies: Codable, Hashable {
     var results: [Movie]
+    var totalPages: Int
 }
 
 struct Movie: Codable, Hashable {
