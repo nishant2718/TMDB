@@ -27,6 +27,7 @@ class NetworkManager: MoviesProvider {
     private let decoder = JSONDecoder()
     private let prefixEndpoint = "https://api.themoviedb.org/3/search/movie?api_key=b11fc621b3f7f739cb79b50319915f1d&language=en-US&query="
     private let suffixEndpoint = "&page="
+    private let posterImageEndpoint = "https://image.tmdb.org/t/p/original"
 
     init() {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -57,13 +58,17 @@ class NetworkManager: MoviesProvider {
         }
     }
     
+    // NOTE: TMDB gives us back HEAVY images, and also forces 20 results per page (with no option to decrease it).
+    // This causes visible UI stuttering issues on scrolling when NOT cached.
     func getPosterImageUsing(_ link: String,
                              with urlSession: URLSession = .shared) async throws -> UIImage {
-        if let image = cache.object(forKey: NSString(string: link)) {
+        let endpoint = "\(posterImageEndpoint)\(link)"
+        
+        if let image = cache.object(forKey: NSString(string: endpoint)) {
             return image
         }
         
-        guard let url = URL(string: link) else {
+        guard let url = URL(string: endpoint) else {
             throw NetworkingError.badUrl
         }
         
@@ -78,7 +83,7 @@ class NetworkManager: MoviesProvider {
             throw NetworkingError.badData
         }
         
-        cache.setObject(image, forKey: NSString(string: link))
+        cache.setObject(image, forKey: NSString(string: endpoint))
         
         return image
     }
