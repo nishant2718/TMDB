@@ -16,6 +16,11 @@ class MovieListCell: UICollectionViewListCell {
         static let elementSpacing: CGFloat = 40
         static let cornerRadius: CGFloat = 8
         static let minimumTextScaleFactor: CGFloat = 0.9
+        static let numberOfLines: Int = 2
+        static let titleFontSize: CGFloat = 20
+        static let titleLabelHeight: CGFloat = 50
+        static let posterImageWidth: CGFloat = 80
+        static let posterImageHeight: CGFloat = 100
     }
     
     // Probably need a date formatter utility, or it can be done in the VC and then given to this cell
@@ -41,8 +46,8 @@ class MovieListCell: UICollectionViewListCell {
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = UX.minimumTextScaleFactor
         label.lineBreakMode = .byTruncatingTail
-        label.numberOfLines = 2
-        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.numberOfLines = UX.numberOfLines
+        label.font = UIFont.systemFont(ofSize: UX.titleFontSize, weight: .bold)
         
         return label
     }()
@@ -78,13 +83,13 @@ class MovieListCell: UICollectionViewListCell {
             posterImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: UX.padding),
             posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: UX.elementSpacing),
             posterImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -UX.padding),
-            posterImageView.widthAnchor.constraint(equalToConstant: 80),
-            posterImageView.heightAnchor.constraint(equalToConstant: 100),
+            posterImageView.widthAnchor.constraint(equalToConstant: UX.posterImageWidth),
+            posterImageView.heightAnchor.constraint(equalToConstant: UX.posterImageHeight),
             
             movieTitleLabel.topAnchor.constraint(equalTo: posterImageView.topAnchor),
             movieTitleLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: UX.elementSpacing),
             movieTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -UX.padding),
-            movieTitleLabel.heightAnchor.constraint(equalToConstant: 50),
+            movieTitleLabel.heightAnchor.constraint(equalToConstant: UX.titleLabelHeight),
             
             movieYearLabel.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor),
             movieYearLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: UX.elementSpacing),
