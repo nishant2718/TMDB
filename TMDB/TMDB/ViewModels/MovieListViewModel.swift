@@ -11,10 +11,14 @@ class MovieListViewModel {
     typealias Dependencies = MoviesProviderService
 
     private let moviesProvider: MoviesProvider
+    private var page = 1
+    private var totalPages = Int.max
     
     var coordinator: MovieListCoordinator?
     var movies: [Movie] = []
-    var page: Int = 1
+    var shouldUpdate: Bool {
+        page <= totalPages
+    }
     
     init(with dependencies: Dependencies) {
         self.moviesProvider = dependencies.moviesProviderService
@@ -31,14 +35,17 @@ class MovieListViewModel {
     }
     
     func fetchMovies() async {
-        do {
-            let movies = try await moviesProvider.getMoviesFor("hitman",
-                                                               and: page,
-                                                               using: .shared)
-            self.movies += movies
-            page += 1
-        } catch {
-            print(error)
+        if shouldUpdate {
+            do {
+                let movies = try await moviesProvider.getMoviesFor("hitman",
+                                                                   and: page,
+                                                                   using: .shared)
+                self.movies += movies.0
+                page += 1
+                totalPages = movies.1
+            } catch {
+                print(error)
+            }
         }
     }
     
