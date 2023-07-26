@@ -12,6 +12,10 @@ class MovieListViewController: UIViewController {
         case list
     }
     
+    private struct UX {
+        static let emptyLabelFontSize: CGFloat = 16
+    }
+    
     // MARK: Properties
     
     var viewModel: MovieListViewModel?
@@ -26,6 +30,17 @@ class MovieListViewController: UIViewController {
         return collectionView
     }()
     
+    lazy private var emptyLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = .MovieList.NoResults
+        label.font = UIFont.systemFont(ofSize: UX.emptyLabelFontSize, weight: .regular)
+        label.textColor = .label
+        label.layer.zPosition = 10
+        
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,7 +53,6 @@ class MovieListViewController: UIViewController {
         configureSearchBar()
         setupLayout()
         configureDataSource()
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -90,22 +104,46 @@ class MovieListViewController: UIViewController {
     
     @MainActor
     private func applyInitialSnapshot() {
-        guard let dataSource, let viewModel else { return }
+        guard let dataSource else { return }
         
         var snapshot = dataSource.snapshot()
         snapshot.appendSections(Section.allCases)
         dataSource.apply(snapshot)
         
-        snapshot.appendItems(viewModel.movies)
-        dataSource.apply(snapshot, animatingDifferences: false)
+        configureEmptyStateLabel()
     }
     
-    private func updateSnapshot(with movies: [Movie]) {
+    private func updateSnapshot(with movies: [Movie],
+                                using newKeyword: Bool = false) {
         guard let dataSource else { return }
 
         var snapshot = dataSource.snapshot()
-        snapshot.appendItems(movies)
-        dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
+        
+        if newKeyword {
+            snapshot.deleteAllItems()
+            
+            snapshot.appendSections(Section.allCases)
+            dataSource.apply(snapshot)
+            
+            snapshot.appendItems(movies)
+            dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
+        } else {
+            snapshot.appendItems(movies)
+            dataSource.apply(snapshot, animatingDifferences: false, completion: nil)
+        }
+        
+        emptyLabel.isHidden = true
+    }
+    
+    private func configureEmptyStateLabel() {
+        view.addSubview(emptyLabel)
+        
+        NSLayoutConstraint.activate([
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyLabel.widthAnchor.constraint(equalToConstant: 80),
+            emptyLabel.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
     
     // MARK: Search related
@@ -122,11 +160,18 @@ class MovieListViewController: UIViewController {
 
 extension MovieListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        // no-op
-        // TODO: send text to viewModel's fetch movies method
+        guard let viewModel else { return }
+
+        guard let text = searchController.searchBar.text, !text.isEmpty else {
+            emptyLabel.isHidden = false
+            // purgeCollectionView() // TODO: Purge so that items dont display
+            return
+        }
+        Task {
+            await viewModel.fetchMoviesWith(text)
+            updateSnapshot(with: viewModel.movies, using: true)
+        }
     }
-    
-    
 }
 
 extension MovieListViewController: UICollectionViewDelegate {

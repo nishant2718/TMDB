@@ -27,5 +27,9 @@ extension String {
                                                     tableName: "MovieList",
                                                     value: "Movie Search",
                                                     comment: "This is the title of the movie search screen. This title is displayed at the top, indicating to the user which screen they are on.")
+        public static let NoResults = NSLocalizedString("MovieList.NoResults",
+                                                        tableName: "MovieList",
+                                                        value: "No results",
+                                                        comment: "This label shows on the movie search page when a user searches for something that has no results.")
     }
 }

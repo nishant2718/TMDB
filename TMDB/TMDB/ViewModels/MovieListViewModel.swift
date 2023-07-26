@@ -16,6 +16,7 @@ class MovieListViewModel {
     
     var coordinator: MovieListCoordinator?
     var movies: [Movie] = []
+    var keyword = ""
     var shouldUpdate: Bool {
         page <= totalPages
     }
@@ -25,9 +26,7 @@ class MovieListViewModel {
     }
     
     func viewDidLoad() {
-        Task {
-            await fetchMovies()
-        }
+        // no-op
     }
     
     func viewDidDisappear() {
@@ -35,17 +34,26 @@ class MovieListViewModel {
     }
     
     func fetchMovies() async {
-        if shouldUpdate {
-            do {
-                let movies = try await moviesProvider.getMoviesFor("hitman",
-                                                                   and: page,
-                                                                   using: .shared)
+        await fetchMoviesWith(keyword)
+    }
+    
+    func fetchMoviesWith(_ keyword: String) async {
+        do {
+            if keyword != self.keyword {
+                let movies = try await moviesProvider.getMoviesFor(keyword, and: page, using: .shared)
+                self.movies.removeAll()
                 self.movies += movies.0
-                page += 1
+                self.keyword = keyword
                 totalPages = movies.1
-            } catch {
-                print(error)
+                page = 1
+            } else {
+                page += 1
+                let movies = try await moviesProvider.getMoviesFor(keyword, and: page, using: .shared)
+                self.movies += movies.0
+                totalPages = movies.1
             }
+        } catch {
+            print(error)
         }
     }
     
