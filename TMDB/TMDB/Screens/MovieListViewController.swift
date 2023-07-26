@@ -52,11 +52,6 @@ class MovieListViewController: UIViewController {
         configureSearchBar()
         setupLayout()
         configureDataSource()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
         applyInitialSnapshot()
     }
     
@@ -189,6 +184,9 @@ extension MovieListViewController: UISearchResultsUpdating {
             purgeCollectionView()
             return
         }
+        
+        guard viewModel.keyword != text else { return }
+        
         Task {
             await viewModel.fetchMoviesWith(text)
             updateSnapshot(with: viewModel.movies, using: true)
