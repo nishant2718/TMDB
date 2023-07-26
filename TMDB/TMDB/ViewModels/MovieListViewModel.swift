@@ -75,7 +75,6 @@ class MovieListViewModel {
     // MARK: Routing
     
     func handleMovieTappedFor(_ movie: Movie) {
-        // TODO: Navigate to the details page
-        // no-op
+        coordinator?.handleMovieTappedFor(movie)
     }
 }

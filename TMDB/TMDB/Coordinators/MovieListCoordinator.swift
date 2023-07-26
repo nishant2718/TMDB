@@ -47,5 +47,15 @@ class MovieListCoordinator: Coordinator {
     }
     
     // MARK: - Routing
-    // incoming
+    
+    func handleMovieTappedFor(_ movie: Movie) {
+        let movieDetailCoordinator = MovieDetailCoordinator()
+        movieDetailCoordinator.parentCoordinator = self
+        
+        childCoordinators.append(movieDetailCoordinator)
+        
+        movieDetailCoordinator.start(using: movie,
+                                     presentedBy: .push,
+                                     with: rootViewController)
+    }
 }
