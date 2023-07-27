@@ -28,7 +28,7 @@ class MockMoviesProvider: MoviesProvider {
     private func provideMovieFixturesUntil(_ numberOfMovies: Int) -> [Movie] {
         var movies: [Movie] = []
         
-        for k in 0...numberOfMovies {
+        for _ in 0...numberOfMovies {
             let movie = Movie(adult: true,
                               genreIds: [],
                               id: movies.count,
