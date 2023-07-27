@@ -48,7 +48,6 @@ class MovieListViewController: UIViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
         title = .MovieList.Title
 
-        viewModel?.viewDidLoad()
         configureSearchBar()
         setupLayout()
         configureDataSource()

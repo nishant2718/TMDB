@@ -11,7 +11,7 @@ class MovieListViewModel {
     typealias Dependencies = MoviesProviderService
 
     private let moviesProvider: MoviesProvider
-    private var page = 1
+    private(set) var page = 1
     private var totalPages = Int.max
     
     var coordinator: MovieListCoordinator?
@@ -23,14 +23,6 @@ class MovieListViewModel {
     
     init(with dependencies: Dependencies) {
         self.moviesProvider = dependencies.moviesProviderService
-    }
-    
-    func viewDidLoad() {
-        // no-op
-    }
-    
-    func viewDidDisappear() {
-        // no-op
     }
     
     func fetchMovies() async {
