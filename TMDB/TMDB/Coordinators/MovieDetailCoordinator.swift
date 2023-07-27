@@ -26,12 +26,13 @@ class MovieDetailCoordinator: Coordinator {
     // MARK: Coordinator interface
     
     @discardableResult
-    func start(using movie: Movie, presentedBy
-               presentationStyle: PresentationStyle,
-               with navigationController: UINavigationController) -> UIViewController? {
+    func start(using movie: Movie,
+               presentedBy presentationStyle: PresentationStyle,
+               with navigationController: UINavigationController,
+               and container: TMDBDependencyContainer) -> UIViewController? {
         self.navigationController = navigationController
         
-        let movieDetailViewModel = MovieDetailViewModel(with: movie)
+        let movieDetailViewModel = MovieDetailViewModel(with: movie, and: container)
         movieDetailViewModel.coordinator = self
         
         let movieDetailViewController = MovieDetailViewController()

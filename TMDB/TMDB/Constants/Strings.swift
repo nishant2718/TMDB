@@ -33,3 +33,16 @@ extension String {
                                                         comment: "This label shows on the movie search page when a user searches for something that has no results.")
     }
 }
+
+extension String {
+    public struct MovieDetail {
+        public static let ViewerRating = NSLocalizedString("MovieDetail.ViewerRating",
+                                                           tableName: "MovieDetail",
+                                                           value: "Viewer Rating",
+                                                           comment: "This text indicates that the viewer rating of a selected movie is displayed proceeding this text.")
+        public static let Overview = NSLocalizedString("MovieDetail.Overview",
+                                                       tableName: "MovieDetail",
+                                                       value: "OVERVIEW",
+                                                       comment: "This text indicates that the proceeding section is the overview of the selected movie.")
+    }
+}

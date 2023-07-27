@@ -175,7 +175,7 @@ class MovieListViewController: UIViewController {
     }
 }
 
-extension MovieListViewController: UISearchResultsUpdating {
+extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         guard let viewModel else { return }
 

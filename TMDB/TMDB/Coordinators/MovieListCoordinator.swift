@@ -56,6 +56,7 @@ class MovieListCoordinator: Coordinator {
         
         movieDetailCoordinator.start(using: movie,
                                      presentedBy: .push,
-                                     with: rootViewController)
+                                     with: rootViewController,
+                                     and: container)
     }
 }
