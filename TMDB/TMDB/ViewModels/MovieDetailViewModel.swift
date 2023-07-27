@@ -12,6 +12,7 @@ class MovieDetailViewModel {
     
     var coordinator: MovieDetailCoordinator?
     private let moviesProvider: MoviesProvider
+    private let dateFormatter = DateFormatter()
     let movie: Movie
     
     init(with movie: Movie, and dependencies: Dependencies) {
@@ -36,5 +37,17 @@ class MovieDetailViewModel {
         }
         
         return image
+    }
+    
+    func readableDateFormatFrom(_ date: String) -> String {
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        var dateString = date
+        guard let date = dateFormatter.date(from: dateString) else { return date }
+        
+        dateFormatter.dateStyle = .long
+        
+        dateString = dateFormatter.string(from: date)
+        
+        return dateString
     }
 }

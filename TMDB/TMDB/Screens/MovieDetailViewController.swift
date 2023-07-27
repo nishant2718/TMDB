@@ -18,7 +18,7 @@ class MovieDetailViewController: UIViewController {
         static let extraPadding: CGFloat = 16
         static let posterWidth: CGFloat = 110
         static let posterHeight: CGFloat = 160
-        static let largeLabelHeight: CGFloat = 40
+        static let largeLabelHeight: CGFloat = 44
         static let smallLabelHeight: CGFloat = 20
     }
     
@@ -179,7 +179,8 @@ class MovieDetailViewController: UIViewController {
         
         movieTitleLabel.text = viewModel.movie.title
         
-        movieDateLabel.text = viewModel.movie.releaseDate
+        let date = viewModel.readableDateFormatFrom(viewModel.movie.releaseDate)
+        movieDateLabel.text = date
         movieDateLabel.textColor = .systemGray
         
         viewerRatingLabel.text = .MovieDetail.ViewerRating
