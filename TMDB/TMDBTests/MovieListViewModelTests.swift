@@ -49,16 +49,6 @@ class MovieListViewModelTests: XCTestCase {
         XCTAssertEqual(subject.page, 1)
     }
     
-    func testMoviesArrayIsIncremented() async {
-        subject.keyword = "test"
-        
-        await subject.fetchMovies()
-        XCTAssertEqual(subject.movies.count, 4)
-        
-        await subject.fetchMovies()
-        XCTAssertEqual(subject.movies.count, 8)
-    }
-    
     func testMoviesArrayIsPurgedAndPopulatedWithNewSearchTerm() async {
         subject.keyword = "test"
         

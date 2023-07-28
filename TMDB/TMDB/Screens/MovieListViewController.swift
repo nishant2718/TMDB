@@ -181,6 +181,7 @@ extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate 
         guard let text = searchController.searchBar.text, !text.isEmpty else {
             emptyLabel.isHidden = false
             purgeCollectionView()
+            viewModel.keyword.removeAll()
             return
         }
         
