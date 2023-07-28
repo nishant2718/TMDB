@@ -168,7 +168,7 @@ class MovieListViewController: UIViewController {
     private func configureSearchBar() {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
-        searchController.searchBar.placeholder = "Search"
+        searchController.searchBar.placeholder = .MovieList.SearchPlaceholder
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
