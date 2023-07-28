@@ -14,6 +14,7 @@ class MovieListViewController: UIViewController {
     
     private struct UX {
         static let emptyLabelFontSize: CGFloat = 16
+        static let collectionViewPadding: CGFloat = 100
     }
     
     // MARK: Properties
@@ -64,7 +65,7 @@ class MovieListViewController: UIViewController {
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: UX.collectionViewPadding),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -167,7 +168,7 @@ class MovieListViewController: UIViewController {
     private func configureSearchBar() {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
-        searchController.searchBar.placeholder = "Search"
+        searchController.searchBar.placeholder = .MovieList.SearchPlaceholder
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
@@ -208,7 +209,7 @@ extension MovieListViewController: UICollectionViewDelegate {
                                   willDecelerate decelerate: Bool) {
         guard let viewModel else { return }
         
-        let offsetY = scrollView.contentOffset.y
+        let offsetY = scrollView.contentOffset.y + UX.collectionViewPadding
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
         

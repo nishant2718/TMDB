@@ -31,6 +31,10 @@ extension String {
                                                         tableName: "MovieList",
                                                         value: "No results",
                                                         comment: "This label shows on the movie search page when a user searches for something that has no results.")
+        public static let SearchPlaceholder = NSLocalizedString("MovieDetail.SearchPlaceholder",
+                                                                tableName: "MovieDetail",
+                                                                value: "Search",
+                                                                comment: "This text serves as placeholder text in the search bar that's in the movie list screen.")
     }
 }
 
