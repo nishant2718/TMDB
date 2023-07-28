@@ -34,14 +34,14 @@ class MovieListViewModel {
             if keyword != self.keyword {
                 let movies = try await moviesProvider.getMoviesFor(keyword, and: page, using: .shared)
                 self.movies.removeAll()
-                self.movies += movies.0
+                self.movies = movies.0
                 self.keyword = keyword
                 totalPages = movies.1
                 page = 1
             } else {
                 page += 1
                 let movies = try await moviesProvider.getMoviesFor(keyword, and: page, using: .shared)
-                self.movies += movies.0
+                self.movies = movies.0
                 totalPages = movies.1
             }
         } catch {
